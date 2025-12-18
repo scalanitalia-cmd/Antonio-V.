@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catalogo Modellismo Scala N</title>
+
+  <style>
+    :root{
+      --accent:#e67e22;
+      --main-dark:#121212;
+      --card-bg:#1e1e1e;
+      --text-light:#ffffff;
+      --price-color:#2ecc71;
+      --edit-color:#3498db;
+      --admin-red:#e74c3c;
+
+      --glass: rgba(0,0,0,0.45);
+      --glass-2: rgba(0,0,0,0.58);
+      --border: rgba(255,255,255,0.10);
+      --shadow: 0 10px 30px rgba(0,0,0,0.45);
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+      color: var(--text-light);
+      background-color: var(--main-dark);
+      overflow-x: hidden;
+    }
+
+    /* ===== SFONDO D445 SU TUTTO IL SITO ===== */
+    body::before{
+      content:"";
+      position: fixed;
+      inset: 0;
+      background: url('d445_sfondo.jpg') center/cover no-repeat;
+      filter: blur(6px);
+      transform: scale(1.05);
+      z-index: -3;
+    }
+    body::after{
+      content:"";
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.70), rgba(0,0,0,0.78));
+      z-index: -2;
+    }
+
+    /* ===== BADGES FISSI (SX) ===== */
+    .top-badges{
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      display: flex;
+      gap: 10px;
+      z-index: 60;
+      pointer-events: none;
+    }
+    .badge{
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(0,0,0,0.50);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      text-transform: uppercase;
+      font-size: 12px;
+      color: #fff;
+      pointer-events: none;
+    }
+    .badge .dot{
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 3px rgba(230,126,34,0.18);
+    }
+    .badge.vlp .dot{
+      background: #2ecc71;
+      box-shadow: 0 0 0 3px rgba(46,204,113,0.18);
+    }
+
+    /* ===== LOGO MARKET SCALA N ITALIA (DX) ===== */
+    .logo-wrap{
+      position: fixed;
+      top: 14px;
+      right: 14px;
+      z-index: 70;
+      background: rgba(0,0,0,0.45);
+      padding: 10px 14px;
+      border-radius: 14px;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.15);
+      box-shadow: var(--shadow);
+      pointer-events: none; /* così non “mangi” click */
+    }
+    .logo-main{
+      height: 60px;
+      width: auto;
+      display: block;
+      filter: drop-shadow(0 6px 12px rgba(0,0,0,0.6));
+    }
+
+    /* ===== SPLASH ANIMATA ===== */
+    #splash{
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at 30% 20%, rgba(230,126,34,0.15), transparent 45%),
+                  radial-gradient(circle at 70% 80%, rgba(46,204,113,0.12), transparent 45%),
+                  rgba(0,0,0,0.88);
+      backdrop-filter: blur(8px);
+      transition: opacity .45s ease, transform .45s ease;
+    }
+    #splash.hide{
+      opacity: 0;
+      transform: scale(1.02);
+      pointer-events: none;
+    }
+    .splash-card{
+      width: min(560px, calc(100vw - 40px));
+      border-radius: 18px;
+      background: rgba(0,0,0,0.55);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 26px 22px;
+      text-align: center;
+    }
+    .splash-sub{
+      margin: 10px 0 18px;
+      color: rgba(255,255,255,0.78);
+      font-weight: 800;
+      letter-spacing: .2px;
+      text-transform: uppercase;
+      font-size: 13px;
+    }
+    .splash-badges{
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .splash-bar{
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .splash-bar > span{
+      display:block;
+      height: 100%;
+      width: 35%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(230,126,34,0.9), rgba(46,204,113,0.9));
+      animation: slide 1.0s ease-in-out infinite;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,0.35));
+    }
+    @keyframes slide{
+      0%{ transform: translateX(-120%); }
+      50%{ transform: translateX(120%); }
+      100%{ transform: translateX(240%); }
+    }
+    .splash-foot{
+      margin-top: 14px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.60);
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+
+    /* ===== SEZIONI / LAYOUT ===== */
+    .section{
+      display:none;
+      padding: 80px 20px 40px;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+    .active{ display:block; }
+
+    .wrap{
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .panel{
+      background: rgba(0,0,0,0.50);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      padding: 18px;
+    }
+
+    .nav-header{
+      display:flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin: 0 auto 18px;
+    }
+    .nav-back{
+      cursor: pointer;
+      color: var(--accent);
+      font-weight: 900;
+      user-select: none;
+    }
+
+    /* ===== HOME ===== */
+    .hero-title{
+      font-size: clamp(2.2rem, 4.3vw, 3.5rem);
+      margin: 0;
+      text-shadow: 4px 4px 15px rgba(0,0,0,0.9);
+      text-transform: uppercase;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+    .hero-sub{
+      font-size: 1.1rem;
+      margin: 12px 0 26px;
+      color: var(--accent);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+    }
+
+    .btn-group{
+      display:flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .btn{
+      padding: 14px 26px;
+      font-size: 1rem;
+      font-weight: 900;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+      text-transform: uppercase;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.16);
+      color: #fff;
+      backdrop-filter: blur(6px);
+    }
+    .btn:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+    }
+    .btn:active{ transform: translateY(0px); opacity: .92; }
+
+    .btn-visitor{ background: rgba(0,0,0,0.35); }
+    .btn-admin{
+      background: rgba(230,126,34,0.95);
+      border-color: rgba(230,126,34,0.25);
+    }
+
+    /* ===== FORM ===== */
+    .form-container{
+      max-width: 520px;
+      margin: 24px auto;
+      padding: 22px;
+      border-radius: 14px;
+      background: rgba(0,0,0,0.55);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+    .form-title{
+      margin: 0 0 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+    }
+    .input-group{ margin-bottom: 12px; }
+    label{
+      display:block;
+      margin-bottom: 6px;
+      color: rgba(255,255,255,0.70);
+      font-size: 0.9rem;
+      font-weight: 800;
+      letter-spacing: .2px;
+    }
+    input, textarea{
+      width: 100%;
+      padding: 12px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.14);
+      color: white;
+      border-radius: 10px;
+      box-sizing: border-box;
+      outline: none;
+    }
+    input:focus, textarea:focus{
+      border-color: rgba(230,126,34,0.55);
+      box-shadow: 0 0 0 3px rgba(230,126,34,0.18);
+    }
+
+    /* ===== TOOLBAR VISITATORE ===== */
+    .toolbar{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0 auto 16px;
+    }
+    .toolbar .left, .toolbar .right{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .select, .search{
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.30);
+      color: #fff;
+      backdrop-filter: blur(8px);
+      font-weight: 800;
+      letter-spacing: .2px;
+    }
+    .search{ min-width: 240px; }
+
+    /* ===== GRID / CARD ===== */
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 18px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .card{
+      background: rgba(0,0,0,0.55);
+      border-radius: 14px;
+      overflow:hidden;
+      position: relative;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+    .card-img{
+      height: 200px;
+      background-size: cover;
+      background-position: center;
+      background-color: rgba(255,255,255,0.06);
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+    }
+    .card-body{ padding: 14px 14px 16px; }
+    .price{
+      color: var(--price-color);
+      font-weight: 900;
+      font-size: 1.15rem;
+      margin-bottom: 6px;
+    }
+    .muted{
+      color: rgba(255,255,255,0.70);
+      font-size: 0.88rem;
+      margin: 8px 0 0;
+      line-height: 1.25rem;
+      white-space: pre-wrap;
+    }
+    .card h3{
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 900;
+      letter-spacing: .2px;
+    }
+
+    /* ===== ADMIN ACTIONS ===== */
+    .card-actions{
+      position:absolute;
+      top: 10px;
+      right: 10px;
+      display:flex;
+      gap: 8px;
+      z-index: 5;
+    }
+    .act-btn{
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      color: white;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight: 900;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.14);
+      backdrop-filter: blur(8px);
+    }
+
+    /* ===== TOAST ===== */
+    .toast{
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.75);
+      border: 1px solid rgba(255,255,255,0.16);
+      padding: 12px 14px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      z-index: 2000;
+      display:none;
+      font-weight: 900;
+      letter-spacing: .2px;
+    }
+    .toast.show{ display:block; animation: pop .25s ease; }
+    @keyframes pop{
+      from{ transform: translateX(-50%) translateY(10px); opacity: 0; }
+      to{ transform: translateX(-50%) translateY(0px); opacity: 1; }
+    }
+
+    /* mobile */
+    @media (max-width: 520px){
+      .search{ min-width: 100%; }
+      .top-badges{ top: 10px; left: 10px; }
+      .badge{ font-size: 11px; padding: 9px 10px; }
+      .logo-main{ height: 46px; }
+      .logo-wrap{ top: 10px; right: 10px; padding: 8px 10px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- BADGES FISSI -->
+  <div class="top-badges" aria-hidden="true">
+    <div class="badge sni"><span class="dot"></span> Scala N Italia</div>
+    <div class="badge vlp"><span class="dot"></span> Venezia Lab Pro</div>
+  </div>
+
+  <!-- LOGO MARKET SCALA N ITALIA -->
+  <div class="logo-wrap" aria-hidden="true">
+    <img src="logo_market_scala_n.jpg" alt="Market Scala N Italia" class="logo-main">
+  </div>
+
+  <!-- SPLASH -->
+  <div id="splash">
+    <div class="splash-card">
+      <!-- LOGO ANCHE IN SPLASH -->
+      <img src="logo_market_scala_n.jpg"
+           alt="Market Scala N Italia"
+           style="height:90px;width:auto;margin:0 auto 10px;display:block;filter:drop-shadow(0 8px 18px rgba(0,0,0,0.6));">
+
+      <div class="splash-sub">Caricamento archivio…</div>
+
+      <div class="splash-badges">
+        <div class="badge sni"><span class="dot"></span> Scala N Italia</div>
+        <div class="badge vlp"><span class="dot"></span> Venezia Lab Pro</div>
+      </div>
+
+      <div class="splash-bar"><span></span></div>
+      <div class="splash-foot">D445 background • modalità ESP32 pronta</div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast"></div>
+
+  <!-- HOME -->
+  <section id="home-screen" class="section active">
+    <div class="wrap">
+      <div class="panel" style="text-align:center; padding: 26px;">
+        <h1 class="hero-title">CATALOGO SCALA N ITALIA</h1>
+        <p class="hero-sub">Archivio Digitale Produzioni Artigianali</p>
+        <div class="btn-group">
+          <button class="btn btn-visitor" onclick="showSection('visitor-section')">Sfoglia Catalogo</button>
+          <button class="btn btn-admin" onclick="showSection('login-section')">Area Amministratore</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOGIN -->
+  <section id="login-section" class="section">
+    <div class="wrap">
+      <div class="nav-header">
+        <span class="nav-back" onclick="showSection('home-screen')">← Torna alla Home</span>
+      </div>
+
+      <div class="form-container">
+        <h2 class="form-title">Accesso Admin</h2>
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" id="admin-password" placeholder="Inserisci password" />
+        </div>
+        <button class="btn btn-admin" style="width:100%" onclick="checkLogin()">Accedi</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ADMIN -->
+  <section id="admin-dashboard" class="section">
+    <div class="wrap">
+      <div class="nav-header">
+        <span class="nav-back" onclick="logout()">← Logout</span>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn" onclick="exportDB()">Esporta DB (JSON)</button>
+          <button class="btn btn-admin" onclick="preparaNuovo()">+ Aggiungi Nuovo</button>
+        </div>
+      </div>
+      <div id="admin-grid" class="grid"></div>
+    </div>
+  </section>
+
+  <!-- INSERIMENTO -->
+  <section id="insert-section" class="section">
+    <div class="wrap">
+      <div class="nav-header">
+        <span class="nav-back" onclick="showSection('admin-dashboard')">← Annulla</span>
+      </div>
+
+      <div class="form-container">
+        <h2 class="form-title" id="form-title">Nuovo Modello</h2>
+        <input type="hidden" id="edit-index" value="-1" />
+
+        <div class="input-group"><label>Nome</label><input type="text" id="nome" /></div>
+        <div class="input-group"><label>Prezzo (€)</label><input type="number" id="costo" /></div>
+        <div class="input-group"><label>Foto</label><input type="file" id="foto-file" accept="image/*" /></div>
+        <div class="input-group"><label>Descrizione</label><textarea id="desc" rows="4"></textarea></div>
+
+        <button class="btn btn-admin" style="width:100%" onclick="salvaModello()">Salva Articolo</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- VISITATORE -->
+  <section id="visitor-section" class="section">
+    <div class="wrap">
+      <div class="nav-header">
+        <span class="nav-back" onclick="showSection('home-screen')">← Home</span>
+      </div>
+
+      <div class="panel" style="margin-bottom:16px;">
+        <div class="toolbar">
+          <div class="left">
+            <input id="searchBox" class="search" placeholder="Cerca (nome o descrizione)..." oninput="renderVisitor()" />
+          </div>
+          <div class="right">
+            <select id="sortSel" class="select" onchange="renderVisitor()">
+              <option value="name_asc">Nome A–Z</option>
+              <option value="name_desc">Nome Z–A</option>
+              <option value="price_asc">Prezzo crescente</option>
+              <option value="price_desc">Prezzo decrescente</option>
+            </select>
+            <button class="btn" onclick="syncNow()">Sync</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="visitor-grid" class="grid"></div>
+    </div>
+  </section>
+
+  <script>
+    // ============================================================
+    // CONFIG — Modalità ESP32 + Server
+    // ============================================================
+    const USE_SERVER = true;   // <-- metti false se vuoi solo localStorage
+    const API_BASE = "";       // stesso host (ESP32). Es: "http://192.168.4.1"
+    const PASS_CORRETTA = "1234";
+
+    let database = [];
+    let currentFotoBase64 = "";
+
+    function toast(msg, ms=1600){
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      clearTimeout(t._to);
+      t._to = setTimeout(()=> t.classList.remove("show"), ms);
+    }
+
+    function showSection(id){
+      document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+      if(id === "visitor-section") renderVisitor();
+      if(id === "admin-dashboard") renderAdmin();
+      window.scrollTo(0,0);
+    }
+
+    function checkLogin(){
+      const pass = document.getElementById("admin-password").value;
+      document.getElementById("admin-password").value = "";
+      if(pass === PASS_CORRETTA){
+        showSection("admin-dashboard");
+        toast("Accesso admin OK");
+      } else {
+        toast("Password errata", 1800);
+      }
+    }
+
+    function logout(){
+      showSection("home-screen");
+      toast("Logout");
+    }
+
+    // ===== localStorage fallback
+    const LS_KEY = "modellismo_n_db_v2";
+
+    function loadLocal(){
+      try{
+        const raw = localStorage.getItem(LS_KEY);
+        const arr = raw ? JSON.parse(raw) : [];
+        if(Array.isArray(arr)) return arr;
+      }catch(e){}
+      return [];
+    }
+    function saveLocal(arr){
+      localStorage.setItem(LS_KEY, JSON.stringify(arr));
+    }
+
+    // ===== server API helpers
+    async function apiFetch(path, opts={}){
+      const url = (API_BASE || "") + path;
+      const ctrl = new AbortController();
+      const timer = setTimeout(()=> ctrl.abort(), 2500);
+      try{
+        const res = await fetch(url, { ...opts, signal: ctrl.signal });
+        clearTimeout(timer);
+        if(!res.ok) throw new Error("HTTP " + res.status);
+        const ct = res.headers.get("content-type") || "";
+        if(ct.includes("application/json")) return await res.json();
+        return await res.text();
+      }catch(e){
+        clearTimeout(timer);
+        throw e;
+      }
+    }
+
+    async function serverLoad(){ return await apiFetch("/api/models", { method: "GET" }); }
+    async function serverCreate(model){
+      return await apiFetch("/api/models", { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(model) });
+    }
+    async function serverUpdate(id, model){
+      return await apiFetch("/api/models/" + encodeURIComponent(id), { method:"PUT", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(model) });
+    }
+    async function serverDelete(id){
+      return await apiFetch("/api/models/" + encodeURIComponent(id), { method:"DELETE" });
+    }
+
+    async function syncNow(){
+      await initDB(true);
+      toast("Sync completato");
+    }
+
+    async function initDB(forceServer=false){
+      if(USE_SERVER || forceServer){
+        try{
+          const srv = await serverLoad();
+          database = normalizeDB(srv);
+          saveLocal(database);
+          return;
+        }catch(e){
+          // fallback
+        }
+      }
+      database = normalizeDB(loadLocal());
+    }
+
+    function normalizeDB(arr){
+      const out = (Array.isArray(arr)?arr:[]).map((m, idx) => ({
+        id: (m.id ?? ("L" + Date.now() + "_" + idx)),
+        nome: String(m.nome ?? "").trim(),
+        costo: String(m.costo ?? "").trim(),
+        desc: String(m.desc ?? "").trim(),
+        foto: String(m.foto ?? "").trim()
+      })).filter(m => m.nome);
+      return out;
+    }
+
+    // ===== foto -> base64
+    document.addEventListener("DOMContentLoaded", () => {
+      const file = document.getElementById("foto-file");
+      file?.addEventListener("change", (e) => {
+        const f = e.target.files?.[0];
+        if(!f) return;
+        if(f.size > 2.5 * 1024 * 1024){
+          toast("Foto troppo grande (max ~2.5MB)");
+          e.target.value = "";
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = ev => currentFotoBase64 = ev.target.result;
+        reader.readAsDataURL(f);
+      });
+    });
+
+    function preparaNuovo(){
+      document.getElementById("form-title").innerText = "Aggiungi Modello";
+      document.getElementById("edit-index").value = "-1";
+      document.getElementById("nome").value = "";
+      document.getElementById("costo").value = "";
+      document.getElementById("desc").value = "";
+      document.getElementById("foto-file").value = "";
+      currentFotoBase64 = "";
+      showSection("insert-section");
+    }
+
+    async function salvaModello(){
+      const idx = parseInt(document.getElementById("edit-index").value, 10);
+      const nome = document.getElementById("nome").value.trim();
+      const costo = document.getElementById("costo").value.trim();
+      const desc = document.getElementById("desc").value.trim();
+
+      if(!nome || !costo){ toast("Compila Nome e Prezzo"); return; }
+
+      const id = (idx === -1) ? ("M" + Date.now()) : database[idx].id;
+
+      const model = {
+        id, nome, costo, desc,
+        foto: currentFotoBase64 || (idx !== -1 ? database[idx].foto : "")
+      };
+
+      if(idx === -1) database.push(model);
+      else database[idx] = model;
+
+      saveLocal(database);
+
+      if(USE_SERVER){
+        try{
+          if(idx === -1) await serverCreate(model);
+          else await serverUpdate(id, model);
+        }catch(e){
+          toast("Server non raggiungibile: salvato in locale");
+        }
+      }
+
+      toast("Salvato");
+      showSection("admin-dashboard");
+    }
+
+    async function deleteModello(i){
+      const m = database[i];
+      if(!m) return;
+      if(!confirm("Eliminare davvero?")) return;
+
+      database.splice(i, 1);
+      saveLocal(database);
+
+      if(USE_SERVER){
+        try{ await serverDelete(m.id); }
+        catch(e){ toast("Server KO: eliminato solo in locale"); }
+      }
+
+      toast("Eliminato");
+      renderAdmin();
+    }
+
+    function editModello(i){
+      const m = database[i];
+      if(!m) return;
+      document.getElementById("form-title").innerText = "Modifica Articolo";
+      document.getElementById("edit-index").value = String(i);
+      document.getElementById("nome").value = m.nome;
+      document.getElementById("costo").value = m.costo;
+      document.getElementById("desc").value = m.desc;
+      document.getElementById("foto-file").value = "";
+      currentFotoBase64 = "";
+      showSection("insert-section");
+    }
+
+    function renderAdmin(){
+      const grid = document.getElementById("admin-grid");
+      if(!database.length){
+        grid.innerHTML = `<div class="panel" style="grid-column:1/-1;text-align:center;">Nessun articolo.</div>`;
+        return;
+      }
+
+      grid.innerHTML = database.map((m,i)=>`
+        <div class="card">
+          <div class="card-actions">
+            <button class="act-btn" style="background:#3498db" onclick="editModello(${i})">✎</button>
+            <button class="act-btn" style="background:#e74c3c" onclick="deleteModello(${i})">×</button>
+          </div>
+          <div class="card-img" style="background-image:url('${m.foto || "https://via.placeholder.com/600x400"}')"></div>
+          <div class="card-body">
+            <div class="price">€ ${escapeHtml(m.costo)}</div>
+            <h3>${escapeHtml(m.nome)}</h3>
+            <p class="muted">${escapeHtml(m.desc)}</p>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderVisitor(){
+      const grid = document.getElementById("visitor-grid");
+      const q = (document.getElementById("searchBox")?.value || "").trim().toLowerCase();
+      const sort = document.getElementById("sortSel")?.value || "name_asc";
+
+      let arr = [...database];
+
+      if(q){
+        arr = arr.filter(m =>
+          (m.nome || "").toLowerCase().includes(q) ||
+          (m.desc || "").toLowerCase().includes(q)
+        );
+      }
+
+      arr.sort((a,b)=>{
+        const ap = parseFloat(String(a.costo).replace(",", ".")) || 0;
+        const bp = parseFloat(String(b.costo).replace(",", ".")) || 0;
+
+        if(sort === "price_asc") return ap - bp;
+        if(sort === "price_desc") return bp - ap;
+
+        const an = (a.nome || "").toLowerCase();
+        const bn = (b.nome || "").toLowerCase();
+        if(sort === "name_desc") return bn.localeCompare(an, "it");
+        return an.localeCompare(bn, "it");
+      });
+
+      if(!arr.length){
+        grid.innerHTML = `<div class="panel" style="grid-column:1/-1;text-align:center;">Nessun articolo trovato.</div>`;
+        return;
+      }
+
+      grid.innerHTML = arr.map(m=>`
+        <div class="card">
+          <div class="card-img" style="background-image:url('${m.foto || "https://via.placeholder.com/600x400"}')"></div>
+          <div class="card-body">
+            <div class="price">€ ${escapeHtml(m.costo)}</div>
+            <h3>${escapeHtml(m.nome)}</h3>
+            <p class="muted">${escapeHtml(m.desc)}</p>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function escapeHtml(s){
+      return String(s ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function exportDB(){
+      const blob = new Blob([JSON.stringify(database, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "catalogo_scalaN_db.json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast("Esportato");
+    }
+
+    async function boot(){
+      await initDB(false);
+
+      const SPLASH_MS = 2600;
+      renderVisitor();
+      renderAdmin();
+
+      setTimeout(()=>{
+        document.getElementById("splash").classList.add("hide");
+        setTimeout(()=> document.getElementById("splash").style.display = "none", 520);
+      }, SPLASH_MS);
+    }
+
+    boot();
+  </script>
+</body>
+</html>
